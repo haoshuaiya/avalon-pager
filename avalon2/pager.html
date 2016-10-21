@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ms-validate</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script src="./avalon-2.1.15.js"></script>
+    <script>
+        var vm = avalon.define({
+            $id: 'test',
+            button: {//注意这里不能以 $开头
+                buttonText: "VM内容",
+                onInit:function () {
+                    console.log('html init')
+                },
+                onReady:function () {
+                    console.log('html ready')
+                },
+                onViewChange:function () {
+                    console.log('view change')
+                },
+                onDispose:function () {
+                    console.log('dispose')
+                }
+            },
+            change:function () {
+                vm.button.buttonText='123'
+            }
+        })
+        
+        function heredoc(fn) {
+            return fn.toString().replace(/^[^\/]+\/\*!?\s?/, '').replace(/\*\/[^\/]+$/, '').trim().replace(/>\s*</g, '><')
+        }
+        avalon.component('ms-button', {
+            template:heredoc(function () {
+                /*
+                 <div><button type="button"><span><slot name="buttonText"></slot></span><span><slot name="btnText"></slot></span></button></div>
+                */
+            }) ,
+            defaults: {
+                buttonText: "默认内容",
+                btnText:'123',
+                cb:function () {
+                },
+                onInit:function () {
+                    this.cb();
+                }
+            },
+            soleSlot: 'btnText'
+        })
+
+    </script>
+</head>
+
+<body ms-controller="test">
+<button type="button" ms-click="@change">click me</button>
+<!--在自定义标签中，ms-widget不是必须的-->
+<ms-button ms-widget="@button"></ms-button>
+<!--下面三种方式，ms-widget才是存在，其中的is也是必须的-->
+<xmp ms-widget='{is:"ms-button"}'></xmp>
+<wbr ms-widget='{is:"ms-button"}'/>
+<template ms-widget='{is:"ms-button"}'>
+</template>
+</body>
+</html>

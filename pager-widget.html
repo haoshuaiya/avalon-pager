@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bootstrap.css">
+    <script src="jquery-3.1.0.js"></script>
+    <script src="bootstrap.js"></script>
+    <script src="avalon.js"></script>
+    <style>
+        .current {
+            background-color: #2d97de !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+<div ms-controller="test">
+    {{content}}
+</div>
+<div ms-controller="page" ms-widget="pager,testtest,$opts">
+    <ul class="pagination" ms-if="pageCount>1">
+        <li ms-click="homePage()" ms-class="{{currentPage==1?'disabled':''}}"><a href="##">首页</a></li>
+        <li ms-click="lastPage()" ms-class="{{currentPage==1?'disabled':''}}"><a href="##">上一页</a></li>
+        <li><a href="##" ms-if="firstDotShow">...</a></li>
+        <li ms-repeat="showArr" ms-click="goTomodel(el)"><a href="##" ms-text="el" ms-class="{{el==currentPage?'current':''}}"></a></li>
+        <li><a href="##" ms-if="lastDotShow">...</a></li>
+        <li ms-click="nextPage()" ms-class="{{currentPage==pageCount?'disabled':''}}"><a href="##">下一页</a></li>
+        <li ms-click="endPage()" ms-class="{{currentPage==pageCount?'disabled':''}}"><a href="##">尾页</a></li>
+    </ul>
+</div>
+<div ms-controller="page5" ms-widget="pager,$,$opts">
+    <ul class="pagination" ms-if="pageCount>1">
+        <li ms-click="homePage()" ms-class="{{currentPage==1?'disabled':''}}"><a href="##">首页</a></li>
+        <li ms-click="lastPage()" ms-class="{{currentPage==1?'disabled':''}}"><a href="##">上一页</a></li>
+        <li><a href="##" ms-if="firstDotShow">...</a></li>
+        <li ms-repeat="showArr" ms-click="goTomodel(el)"><a href="##" ms-text="el"  ms-class="{{el==currentPage?'current':''}}"></a></li>
+        <li><a href="##" ms-if="lastDotShow">...</a></li>
+        <li ms-click="nextPage()" ms-class="{{currentPage==pageCount?'disabled':''}}"><a href="##">下一页</a></li>
+        <li ms-click="endPage()" ms-class="{{currentPage==pageCount?'disabled':''}}"><a href="##">尾页</a></li>
+    </ul>
+</div>
+<script type="text/javascript">
+//main.js ==>componennt ==>content
+        // input             output  
+    require(["pager"], function () {
+                var vm = avalon.define({
+                    $id: 'page',
+                    $opts: {
+                        pageCount: 5,
+                        cb: avalon.noop
+                    }
+        });
+        var test = avalon.define({
+            $id: 'test',
+            content: ''
+        });
+        var vm1 = avalon.define({
+            $id: 'page5',
+            $opts: {
+                pageCount: 10,
+                cb: function () {
+                    console.log(3333)
+                }
+            }
+        })
+        avalon.ready(function () {
+            $.ajax({
+                url: 'data.json',
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                    vm.$opts.pageCount = res.pageCount;
+                    // var current=avalon.vmodels['testtest'].currentPage;
+                    vm.$opts.cb = function (current) {
+//                        var current = $('.pagination').find('.current').html() || 1;
+                          
+//                        console.log(current);
+                        $.get(current + '.json', function (res) {
+                            test.content = res.message;
+                        })
+                    };
+//                    console.log(vm.$opts)
+                    avalon.scan()
+                },
+                error: function (xhr, status, err) {
+                    console.log(err);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
